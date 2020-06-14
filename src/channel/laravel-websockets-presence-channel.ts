@@ -8,7 +8,7 @@ export class LaravelWebsocketsPresenceChannel extends LaravelWebsocketsPrivateCh
     /**
      * Register a callback to be called anytime the member list changes.
      */
-    here(callback: Function): LaravelWebsocketsPresenceChannel {
+    here(callback: (member: any) => void): LaravelWebsocketsPresenceChannel {
         this.on('presence:subscribed', (members: any[]) => {
             callback(members.map((m) => m.user_info));
         });
@@ -19,7 +19,7 @@ export class LaravelWebsocketsPresenceChannel extends LaravelWebsocketsPrivateCh
     /**
      * Listen for someone joining the channel.
      */
-    joining(callback: Function): LaravelWebsocketsPresenceChannel {
+    joining(callback: (member: any) => void): LaravelWebsocketsPresenceChannel {
         this.on('presence:joining', (member: any) => callback(member.user_info));
 
         return this;
@@ -28,7 +28,7 @@ export class LaravelWebsocketsPresenceChannel extends LaravelWebsocketsPrivateCh
     /**
      * Listen for someone leaving the channel.
      */
-    leaving(callback: Function): LaravelWebsocketsPresenceChannel {
+    leaving(callback: (member: any) => void): LaravelWebsocketsPresenceChannel {
         this.on('presence:leaving', (member: any) => callback(member.user_info));
 
         return this;

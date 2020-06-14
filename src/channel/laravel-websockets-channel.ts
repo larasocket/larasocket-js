@@ -70,7 +70,7 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Listen for an event on the channel instance.
      */
-    listen(event: string, callback: Function): LaravelWebsocketsChannel {
+    listen(event: string, callback: () => void): LaravelWebsocketsChannel {
         this.on(this.eventFormatter.format(event), callback);
 
         return this;
@@ -90,9 +90,9 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Bind the channel's socket to an event and store the callback.
      */
-    on(event: string, callback: Function): void {
-        let listener = (channel, data) => {
-            if (this.name == channel) {
+    on(event: string, callback: (data: any) => void): void {
+        const listener = (channel: any, data: any) => {
+            if (this.name === channel) {
                 callback(data);
             }
         };
@@ -116,7 +116,7 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Bind the channel's socket to an event and store the callback.
      */
-    bind(event: string, callback: Function): void {
+    bind(event: string, callback: (channel: any, data: any) => void): void {
         this.events[event] = this.events[event] || [];
         this.events[event].push(callback);
     }
@@ -126,7 +126,7 @@ export class LaravelWebsocketsChannel extends Channel {
      */
     unbind(): void {
         Object.keys(this.events).forEach((event) => {
-            this.events[event].forEach((callback) => {
+            this.events[event].forEach((callback: any) => {
                 this.socket.removeListener(event, callback);
             });
 

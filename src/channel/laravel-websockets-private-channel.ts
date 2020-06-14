@@ -11,7 +11,7 @@ export class LaravelWebsocketsPrivateChannel extends LaravelWebsocketsChannel {
         this.socket.emit('client event', {
             channel: this.name,
             event: `client-${eventName}`,
-            data: data,
+            data: `{data}`,
         });
 
         return this;

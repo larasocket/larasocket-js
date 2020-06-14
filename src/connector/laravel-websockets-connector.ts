@@ -23,14 +23,14 @@ export class LaravelWebsocketsConnector extends Connector {
         const socket = new WebSocket('wss://qlsqgawi1i.execute-api.us-east-1.amazonaws.com/WebsocketProxy');
 
         // Connection opened
-        socket.addEventListener('open', function (event) {
+        socket.addEventListener('open', (event) => {
             // tslint:disable-next-line
             console.log(event);
             socket.send('Hello Server!');
         });
 
         // Listen for messages
-        socket.addEventListener('message', function (event) {
+        socket.addEventListener('message', (event) => {
             // tslint:disable-next-line
             console.log('Message from server ', event.data);
         });
@@ -69,7 +69,7 @@ export class LaravelWebsocketsConnector extends Connector {
     /**
      * Listen for an event on a channel instance.
      */
-    listen(name: string, event: string, callback: Function): LaravelWebsocketsChannel {
+    listen(name: string, event: string, callback: () => void): LaravelWebsocketsChannel {
         return this.channel(name).listen(event, callback);
     }
 
@@ -114,10 +114,10 @@ export class LaravelWebsocketsConnector extends Connector {
      * Leave the given channel, as well as its private and presence variants.
      */
     leave(name: string): void {
-        let channels = [name, 'private-' + name, 'presence-' + name];
+        const channels = [name, 'private-' + name, 'presence-' + name];
 
-        channels.forEach((name) => {
-            this.leaveChannel(name);
+        channels.forEach((_name) => {
+            this.leaveChannel(_name);
         });
     }
 
