@@ -1,18 +1,17 @@
 {
   "name": "laravel-websockets-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Echo friendly websocket solution for Laravel applications",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
-    "format": "./node_modules/.bin/tsc --write \"src/**/*.ts \"src/**/*.js",
     "lint": "./node_modules/.bin/tsc -p tsconfig.json",
     "test": "./node_modules/.bin/tsc",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
+    "version": "git add -A src",
     "postversion": "git push && git push --tags"
   },
   "repository": {
