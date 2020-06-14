@@ -8,6 +8,7 @@
     "build": "./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tsc -p tsconfig.json",
     "test": "./node_modules/.bin/tsc",
+    "prepublish": "npm run build",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
