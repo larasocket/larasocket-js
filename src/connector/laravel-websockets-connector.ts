@@ -3,7 +3,7 @@ import {
     LaravelWebsocketsPresenceChannel,
     LaravelWebsocketsPrivateChannel,
 } from '../channel';
-import { Connector } from 'laravel-echo/dist/connector';
+import {Connector} from "./connector";
 
 /**
  * This class creates a connector to a Socket.io server.
