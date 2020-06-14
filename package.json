@@ -35,7 +35,6 @@
   "devDependencies": {
     "@types/jest": "^26.0.0",
     "jest": "^26.0.1",
-    "laravel-echo": "^1.8.0",
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
     "tslint": "^6.1.2",

@@ -1,3 +1,3 @@
-import { LaravelWebsocketsConnector } from './connector/laravel-websockets-connector';
+import { LaravelWebsocketsConnector } from './connector';
 
 exports.broadcaster = LaravelWebsocketsConnector;
