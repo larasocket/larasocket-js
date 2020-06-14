@@ -3,11 +3,12 @@
   "version": "1.0.1",
   "description": "Echo friendly websocket solution for Laravel applications",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts \"src/**/*.js",
-    "lint": "tslint -p tsconfig.json",
-    "test": "jest",
+    "build": "./node_modules/.bin/tsc",
+    "format": "./node_modules/.bin/tsc --write \"src/**/*.ts \"src/**/*.js",
+    "lint": "./node_modules/.bin/tsc -p tsconfig.json",
+    "test": "./node_modules/.bin/tsc",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
@@ -38,6 +39,7 @@
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
     "tslint": "^6.1.2",
-    "tslint-config-prettier": "^1.18.0"
-  }
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.5"
+  },
 }
