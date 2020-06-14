@@ -1,0 +1,26 @@
+{
+  "name": "laravel-websockets-js",
+  "version": "1.0.0",
+  "description": "Echo friendly websocket solution for Laravel applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exzachlyvv/laravel-websockets-js.git"
+  },
+  "keywords": [
+    "echo",
+    "websocket",
+    "pusher",
+    "broadcast",
+    "laravel"
+  ],
+  "author": "Zach Vander Velden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exzachlyvv/laravel-websockets-js/issues"
+  },
+  "homepage": "https://github.com/exzachlyvv/laravel-websockets-js#readme"
+}
