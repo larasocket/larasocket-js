@@ -10,19 +10,19 @@ export abstract class Channel {
     /**
      * Listen for an event on the channel instance.
      */
-    abstract listen(event: string, callback: Function): Channel;
+    abstract listen(event: string, callback: () => void): Channel;
 
     /**
      * Listen for a whisper event on the channel instance.
      */
-    listenForWhisper(event: string, callback: Function): Channel {
+    listenForWhisper(event: string, callback: () => void): Channel {
         return this.listen('.client-' + event, callback);
     }
 
     /**
      * Listen for an event on the channel instance.
      */
-    notification(callback: Function): Channel {
+    notification(callback: () => void): Channel {
         return this.listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', callback);
     }
 

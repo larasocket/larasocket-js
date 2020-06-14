@@ -49,17 +49,20 @@ export abstract class Connector {
         let selector;
 
         // @ts-ignore
-        if (typeof window !== 'undefined' && window['Laravel'] && window['Laravel'].csrfToken) {
+        if (typeof window !== 'undefined' && window.Laravel && window.Laravel.csrfToken) {
             // @ts-ignore
-            return window['Laravel'].csrfToken;
+            return window.Laravel.csrfToken;
         } else if (this.options.csrfToken) {
             return this.options.csrfToken;
         } else if (
             typeof document !== 'undefined' &&
-            typeof document.querySelector === 'function' &&
-            (selector = document.querySelector('meta[name="csrf-token"]'))
+            typeof document.querySelector === 'function'
         ) {
-            return selector.getAttribute('content');
+            selector = document.querySelector('meta[name="csrf-token"]');
+
+            if (selector) {
+                return selector.getAttribute('content');
+            }
         }
 
         return null;
