@@ -1,3 +1,3 @@
-exports.test = () => {
-    return 1+1;
-}
+import {LaravelWebsocketsConnector} from "./connector/laravel-websockets-connector";
+
+exports = LaravelWebsocketsConnector;

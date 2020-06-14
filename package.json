@@ -1,8 +1,8 @@
 {
   "name": "laravel-websockets-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Echo friendly websocket solution for Laravel applications",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts \"src/**/*.js",
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.0",
     "jest": "^26.0.1",
+    "laravel-echo": "^1.8.0",
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
     "tslint": "^6.1.2",
