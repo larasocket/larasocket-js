@@ -1,8 +1,8 @@
 /**
  * This class represents a Socket.io channel.
  */
-import {Channel} from "./channel";
-import {EventFormatter} from "../util";
+import { Channel } from './channel';
+import { EventFormatter } from '../util';
 
 export class LaravelWebsocketsChannel extends Channel {
     /**

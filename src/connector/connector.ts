@@ -45,7 +45,7 @@ export abstract class Connector {
     /**
      * Extract the CSRF token from the page.
      */
-    protected csrfToken(): string|null {
+    protected csrfToken(): string | null {
         let selector;
 
         // @ts-ignore
@@ -54,10 +54,7 @@ export abstract class Connector {
             return window.Laravel.csrfToken;
         } else if (this.options.csrfToken) {
             return this.options.csrfToken;
-        } else if (
-            typeof document !== 'undefined' &&
-            typeof document.querySelector === 'function'
-        ) {
+        } else if (typeof document !== 'undefined' && typeof document.querySelector === 'function') {
             selector = document.querySelector('meta[name="csrf-token"]');
 
             if (selector) {
