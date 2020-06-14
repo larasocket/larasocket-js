@@ -1,5 +1,9 @@
-import {LaravelWebsocketsChannel, LaravelWebsocketsPresenceChannel, LaravelWebsocketsPrivateChannel} from "../channel";
-import {Connector} from "laravel-echo/dist/connector";
+import {
+    LaravelWebsocketsChannel,
+    LaravelWebsocketsPresenceChannel,
+    LaravelWebsocketsPrivateChannel,
+} from '../channel';
+import { Connector } from 'laravel-echo/dist/connector';
 
 /**
  * This class creates a connector to a Socket.io server.
@@ -89,7 +93,11 @@ export class LaravelWebsocketsConnector extends Connector {
      */
     privateChannel(name: string): LaravelWebsocketsPrivateChannel {
         if (!this.channels['private-' + name]) {
-            this.channels['private-' + name] = new LaravelWebsocketsPrivateChannel(this.websocket, 'private-' + name, this.options);
+            this.channels['private-' + name] = new LaravelWebsocketsPrivateChannel(
+                this.websocket,
+                'private-' + name,
+                this.options,
+            );
         }
 
         return this.channels['private-' + name];
@@ -103,7 +111,7 @@ export class LaravelWebsocketsConnector extends Connector {
             this.channels['presence-' + name] = new LaravelWebsocketsPresenceChannel(
                 this.websocket,
                 'presence-' + name,
-                this.options
+                this.options,
             );
         }
 

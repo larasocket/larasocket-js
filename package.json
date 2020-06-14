@@ -1,12 +1,12 @@
 {
   "name": "laravel-websockets-js",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Echo friendly websocket solution for Laravel applications",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts \"src/**/*.js",
+    "format": "prettier --write \"./src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "test": "jest",
     "prepare": "npm run build",

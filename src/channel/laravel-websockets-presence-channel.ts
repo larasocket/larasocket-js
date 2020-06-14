@@ -1,5 +1,5 @@
 import { LaravelWebsocketsPrivateChannel } from './laravel-websockets-private-channel';
-import {PresenceChannel} from "laravel-echo/dist/channel";
+import { PresenceChannel } from 'laravel-echo/dist/channel';
 
 /**
  * This class represents a Socket.io presence channel.
