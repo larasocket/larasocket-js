@@ -1,1 +1,1 @@
-declare let ws: any;
+declare let axios: any;

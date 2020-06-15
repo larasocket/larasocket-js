@@ -4,6 +4,8 @@ import {
     LaravelWebsocketsPrivateChannel,
 } from '../channel';
 import {Connector} from "./connector";
+import {SocketMessage} from "../util/socket-message";
+import {LaravelWebsocketManager} from "../util/laravel-websocket-manager";
 
 /**
  * This class creates a connector to a Socket.io server.
@@ -23,52 +25,13 @@ export class LaravelWebsocketsConnector extends Connector {
      * Create a fresh Socket.io connection.
      */
     connect(): void {
-        // Create WebSocket connection.
-        const socket = new WebSocket('wss://qlsqgawi1i.execute-api.us-east-1.amazonaws.com/WebsocketProxy');
 
-        // Connection opened
-        socket.addEventListener('open', (event) => {
-            // tslint:disable-next-line
-            console.log(event);
-            socket.send('Hello Server!');
-        });
+        const websocketManager = new LaravelWebsocketManager(this.options);
 
-        // Listen for messages
-        socket.addEventListener('message', (event) => {
-            // tslint:disable-next-line
-            console.log('Message from server ', event.data);
-        });
-
-        this.websocket = socket;
-
-        // let ws = this.getWebsocket();
-        //
-        // this.websocket = new ws(this.options.host);//, this.options);
-        //
-        // ws.on('open', () => console.log('connected'));
-        // ws.on('message', (data: any) => console.log(`From server: ${data}`));
-        // ws.on('close', () => {
-        //     console.log('disconnected');
-        //     process.exit();
-        // });
+        this.websocket = websocketManager;
 
         return this.websocket;
     }
-
-    /**
-     * Get socket.io module from global scope or options.
-     */
-    // getWebsocket(): any {
-    //     if (typeof this.options.client !== 'undefined') {
-    //         return this.options.client;
-    //     }
-    //
-    //     if (typeof ws !== 'undefined') {
-    //         return ws;
-    //     }
-    //
-    //     throw new Error('"ws" client not found. Should be globally available or passed via options.client');
-    // }
 
     /**
      * Listen for an event on a channel instance.
