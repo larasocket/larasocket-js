@@ -1,4 +1,4 @@
-import {LaravelWebsocketsChannel} from "../channel";
+import {LarasocketChannel} from "../channel";
 
 export enum MessageType {
     LINK_CONNECTION = 'LINK_CONNECTION',
@@ -24,7 +24,7 @@ export class Message {
     /**
      * Laravel Websocket API key.
      */
-    channel: LaravelWebsocketsChannel | null = null;
+    channel: LarasocketChannel | null = null;
 
     /**
      * Event namespace.

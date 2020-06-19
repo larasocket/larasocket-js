@@ -3,13 +3,13 @@
  */
 import {Channel} from './channel';
 import {EventFormatter} from '../util';
-import {LaravelWebsocketManager} from "../util/laravel-websocket-manager";
+import {LarasocketManager} from "../util/larasocket-manager";
 
-export class LaravelWebsocketsChannel extends Channel {
+export class LarasocketChannel extends Channel {
     /**
      * The Socket.io client instance.
      */
-    socket: LaravelWebsocketManager;
+    socket: LarasocketManager;
 
     /**
      * The name of the channel.
@@ -29,7 +29,7 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Create a new class instance.
      */
-    constructor(socket: LaravelWebsocketManager, name: string, options: any) {
+    constructor(socket: LarasocketManager, name: string, options: any) {
         super();
 
         this.name = name;
@@ -59,7 +59,7 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Listen for an event on the channel instance.
      */
-    listen(event: string, callback: () => void): LaravelWebsocketsChannel {
+    listen(event: string, callback: () => void): LarasocketChannel {
         this.on(event, callback);
 
         return this;
@@ -68,7 +68,7 @@ export class LaravelWebsocketsChannel extends Channel {
     /**
      * Stop listening for an event on the channel instance.
      */
-    stopListening(event: string): LaravelWebsocketsChannel {
+    stopListening(event: string): LarasocketChannel {
         // const name = this.eventFormatter.format(event);
         // this.socket.removeListener(name);
         // delete this.events[name];

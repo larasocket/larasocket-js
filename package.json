@@ -1,5 +1,5 @@
 {
-  "name": "laravel-websockets-js",
+  "name": "larasocket-js",
   "version": "1.0.5",
   "description": "Echo friendly websocket solution for Laravel applications",
   "main": "./dist/index.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exzachlyvv/laravel-websockets-js.git"
+    "url": "git+https://github.com/exzachlyvv/larasocket-js.git"
   },
   "keywords": [
     "echo",
@@ -29,9 +29,9 @@
   "author": "Zach Vander Velden",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/exzachlyvv/laravel-websockets-js/issues"
+    "url": "https://github.com/exzachlyvv/larasocket-js/issues"
   },
-  "homepage": "https://github.com/exzachlyvv/laravel-websockets-js#readme",
+  "homepage": "https://github.com/exzachlyvv/larasocket-js#readme",
   "devDependencies": {
     "@types/jest": "^26.0.0",
     "jest": "^26.0.1",

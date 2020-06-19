@@ -1,11 +1,11 @@
-import {LaravelWebsocketsChannel, LaravelWebsocketsPresenceChannel, LaravelWebsocketsPrivateChannel,} from '../channel';
+import {LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel,} from '../channel';
 import {Connector} from "./connector";
-import {LaravelWebsocketManager} from "../util/laravel-websocket-manager";
+import {LarasocketManager} from "../util/larasocket-manager";
 
 /**
  * This class creates a connector to a Socket.io server.
  */
-export class LaravelWebsocketsConnector extends Connector {
+export class LarasocketConnector extends Connector {
     /**
      * The websocket connection instance.
      */
@@ -20,7 +20,7 @@ export class LaravelWebsocketsConnector extends Connector {
      * Create a fresh Socket.io connection.
      */
     connect(): void {
-        this.websocket = new LaravelWebsocketManager(this.options);
+        this.websocket = new LarasocketManager(this.options);
 
         return this.websocket;
     }
@@ -28,16 +28,16 @@ export class LaravelWebsocketsConnector extends Connector {
     /**
      * Listen for an event on a channel instance.
      */
-    listen(name: string, event: string, callback: () => void): LaravelWebsocketsChannel {
+    listen(name: string, event: string, callback: () => void): LarasocketChannel {
         return this.channel(name).listen(event, callback);
     }
 
     /**
      * Get a channel instance by name.
      */
-    channel(name: string): LaravelWebsocketsChannel {
+    channel(name: string): LarasocketChannel {
         if (!this.channels[name]) {
-            this.channels[name] = new LaravelWebsocketsChannel(this.websocket, name, this.options);
+            this.channels[name] = new LarasocketChannel(this.websocket, name, this.options);
         }
 
         return this.channels[name];
@@ -46,9 +46,9 @@ export class LaravelWebsocketsConnector extends Connector {
     /**
      * Get a private channel instance by name.
      */
-    privateChannel(name: string): LaravelWebsocketsPrivateChannel {
+    privateChannel(name: string): LarasocketPrivateChannel {
         if (!this.channels['private-' + name]) {
-            this.channels['private-' + name] = new LaravelWebsocketsPrivateChannel(
+            this.channels['private-' + name] = new LarasocketPrivateChannel(
                 this.websocket,
                 'private-' + name,
                 this.options,
@@ -61,9 +61,9 @@ export class LaravelWebsocketsConnector extends Connector {
     /**
      * Get a presence channel instance by name.
      */
-    presenceChannel(name: string): LaravelWebsocketsPresenceChannel {
+    presenceChannel(name: string): LarasocketPresenceChannel {
         if (!this.channels['presence-' + name]) {
-            this.channels['presence-' + name] = new LaravelWebsocketsPresenceChannel(
+            this.channels['presence-' + name] = new LarasocketPresenceChannel(
                 this.websocket,
                 'presence-' + name,
                 this.options,

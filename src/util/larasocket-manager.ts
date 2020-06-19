@@ -1,11 +1,11 @@
 import {Message, MessageType} from "./message";
-import {LaravelWebsocketsChannel, LaravelWebsocketsPresenceChannel, LaravelWebsocketsPrivateChannel} from "../channel";
+import {LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel} from "../channel";
 import {EventFormatter} from "./event-formatter";
 
 /**
  * Event name formatter
  */
-export class LaravelWebsocketManager {
+export class LarasocketManager {
 
     /**
      *
@@ -42,7 +42,7 @@ export class LaravelWebsocketManager {
      *
      * @param channel
      */
-    subscribe(channel: LaravelWebsocketsChannel) {
+    subscribe(channel: LarasocketChannel) {
         this.authenticate(channel).then(() => {
             let subscribeMessage = this.getSocketMessage(MessageType.SUBSCRIBE);
 
@@ -57,7 +57,7 @@ export class LaravelWebsocketManager {
      *
      * @param channel
      */
-    unsubscribe(channel: LaravelWebsocketsChannel) {
+    unsubscribe(channel: LarasocketChannel) {
         let unsubscribeMessage = this.getSocketMessage(MessageType.UNSUBSCRIBE);
 
         unsubscribeMessage.channel = channel;
@@ -127,8 +127,8 @@ export class LaravelWebsocketManager {
         return socket;
     }
 
-    protected authenticate(channel: LaravelWebsocketsChannel): Promise<any> {
-        if (channel instanceof LaravelWebsocketsPresenceChannel || channel instanceof LaravelWebsocketsPrivateChannel) {
+    protected authenticate(channel: LarasocketChannel): Promise<any> {
+        if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
             return this.getAuthNetworkPromise(channel.name)
                 .then((response: any) => {
                     return 'success';
