@@ -4,7 +4,6 @@
 import {Channel} from './channel';
 import {EventFormatter} from '../util';
 import {LaravelWebsocketManager} from "../util/laravel-websocket-manager";
-import {ChannelSubscription, ChannelSubscriptionStatus} from "../util/channel-subscription";
 
 export class LaravelWebsocketsChannel extends Channel {
     /**
@@ -28,11 +27,6 @@ export class LaravelWebsocketsChannel extends Channel {
     events: any = {};
 
     /**
-     *
-     */
-    subscription: ChannelSubscription = new ChannelSubscription();
-
-    /**
      * Create a new class instance.
      */
     constructor(socket: LaravelWebsocketManager, name: string, options: any) {
@@ -50,11 +44,7 @@ export class LaravelWebsocketsChannel extends Channel {
      * Subscribe to a Socket.io channel.
      */
     subscribe(): void {
-        this.socket.subscribe(this).then((channelSubscription: ChannelSubscription) => {
-            // tslint:disable-next-line
-            console.log('Subscribed to channel: ', channelSubscription);
-            this.subscription = channelSubscription
-        });
+        this.socket.subscribe(this);
     }
 
     /**
@@ -63,10 +53,7 @@ export class LaravelWebsocketsChannel extends Channel {
     unsubscribe(): void {
         this.unbind();
 
-        this.socket.unsubscribe(this).then(() => {
-            // tslint:disable-next-line
-            console.log('Unsubscribed to channel');
-        });
+        this.socket.unsubscribe(this);
     }
 
     /**
@@ -128,12 +115,5 @@ export class LaravelWebsocketsChannel extends Channel {
         //
         //     delete this.events[event];
         // });
-    }
-
-    /**
-     *
-     */
-    isConnected(): boolean {
-        return this.subscription.status === ChannelSubscriptionStatus.CONNECTED && this.subscription.id > 0;
     }
 }

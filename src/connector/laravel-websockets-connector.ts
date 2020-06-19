@@ -1,10 +1,5 @@
-import {
-    LaravelWebsocketsChannel,
-    LaravelWebsocketsPresenceChannel,
-    LaravelWebsocketsPrivateChannel,
-} from '../channel';
+import {LaravelWebsocketsChannel, LaravelWebsocketsPresenceChannel, LaravelWebsocketsPrivateChannel,} from '../channel';
 import {Connector} from "./connector";
-import {SocketMessage} from "../util/socket-message";
 import {LaravelWebsocketManager} from "../util/laravel-websocket-manager";
 
 /**
@@ -25,10 +20,7 @@ export class LaravelWebsocketsConnector extends Connector {
      * Create a fresh Socket.io connection.
      */
     connect(): void {
-
-        const websocketManager = new LaravelWebsocketManager(this.options);
-
-        this.websocket = websocketManager;
+        this.websocket = new LaravelWebsocketManager(this.options);
 
         return this.websocket;
     }
