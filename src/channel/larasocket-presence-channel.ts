@@ -1,10 +1,9 @@
 import { LarasocketPrivateChannel } from './larasocket-private-channel';
-import { PresenceChannel } from './presence-channel';
 
 /**
  * This class represents a Socket.io presence channel.
  */
-export class LarasocketPresenceChannel extends LarasocketPrivateChannel implements PresenceChannel {
+export class LarasocketPresenceChannel extends LarasocketPrivateChannel {
     /**
      * Register a callback to be called anytime the member list changes.
      */

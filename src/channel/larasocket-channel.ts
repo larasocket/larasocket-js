@@ -3,9 +3,11 @@
  */
 import {Channel} from './channel';
 import {EventFormatter} from '../util';
-import {LarasocketManager} from "../util/larasocket-manager";
+import {LarasocketManager} from "../util";
 
 export class LarasocketChannel extends Channel {
+    eventFormatter: EventFormatter;
+
     /**
      * The Socket.io client instance.
      */
@@ -32,6 +34,7 @@ export class LarasocketChannel extends Channel {
     constructor(socket: LarasocketManager, name: string, options: any) {
         super();
 
+        this.eventFormatter = new EventFormatter(options.namespace);
         this.name = name;
         this.socket = socket;
         this.options = options;
@@ -69,9 +72,9 @@ export class LarasocketChannel extends Channel {
      * Stop listening for an event on the channel instance.
      */
     stopListening(event: string): LarasocketChannel {
-        // const name = this.eventFormatter.format(event);
-        // this.socket.removeListener(name);
-        // delete this.events[name];
+        const name = this.eventFormatter.format(event);
+        this.socket.removeListener(name);
+        delete this.events[name];
 
         return this;
     }
@@ -100,20 +103,18 @@ export class LarasocketChannel extends Channel {
      * Bind the channel's socket to an event and store the callback.
      */
     bind(event: string, callback: (channel: any, data: any) => void): void {
-        // this.events[event] = this.events[event] || [];
-        // this.events[event].push(callback);
+        this.events[event] = this.events[event] || [];
+        this.events[event].push(callback);
     }
 
     /**
      * Unbind the channel's socket from all stored event callbacks.
      */
     unbind(): void {
-        // Object.keys(this.events).forEach((event) => {
-        //     this.events[event].forEach((callback: any) => {
-        //         this.socket.removeListener(event, callback);
-        //     });
-        //
-        //     delete this.events[event];
-        // });
+        Object.keys(this.events).forEach((event) => {
+            this.socket.removeListener(event);
+
+            delete this.events[event];
+        });
     }
 }

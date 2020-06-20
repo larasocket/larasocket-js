@@ -5,6 +5,7 @@ export enum MessageType {
     SUBSCRIBE = 'SUBSCRIBE',
     UNSUBSCRIBE = 'UNSUBSCRIBE',
     COMMUNICATION = 'COMMUNICATION',
+    WHISPER = 'WHISPER',
 }
 
 /**
@@ -34,7 +35,7 @@ export class Message {
     /**
      * Event namespace.
      */
-    payload: object | null = null;
+    payload: any | null = null;
 
     /**
      * Create a new class instance.
@@ -42,6 +43,23 @@ export class Message {
     constructor(token: string, action: MessageType) {
         this.token = token;
         this.action = action;
+    }
+
+    static make(token: string, json: any): Message {
+        let message = new Message(token, json.action);
+
+        message = Object.assign(message, json);
+
+        if (typeof message.payload === 'string') {
+            try {
+                message.payload = JSON.parse(message.payload);
+            } catch (e) {
+                // tslint:disable-next-line
+                console.log('Failed to parse payload from the message', e);
+            }
+        }
+
+        return message;
     }
 
     /**
@@ -52,6 +70,7 @@ export class Message {
             'event': this.event,
             'token': this.token,
             'action': this.action,
+            'payload': this.payload,
             'channel': this.channel?.name,
         };
     }

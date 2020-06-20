@@ -44,7 +44,7 @@ export class LarasocketManager {
      */
     subscribe(channel: LarasocketChannel) {
         this.authenticate(channel).then(() => {
-            let subscribeMessage = this.getSocketMessage(MessageType.SUBSCRIBE);
+            const subscribeMessage = this.getSocketMessage(MessageType.SUBSCRIBE);
 
             subscribeMessage.channel = channel;
 
@@ -58,7 +58,7 @@ export class LarasocketManager {
      * @param channel
      */
     unsubscribe(channel: LarasocketChannel) {
-        let unsubscribeMessage = this.getSocketMessage(MessageType.UNSUBSCRIBE);
+        const unsubscribeMessage = this.getSocketMessage(MessageType.UNSUBSCRIBE);
 
         unsubscribeMessage.channel = channel;
 
@@ -78,6 +78,33 @@ export class LarasocketManager {
     }
 
     /**
+     * Tie an event listener to an action.
+     *
+     * @param name
+     */
+    removeListener(name: string) {
+        const formattedEventName = this.eventFormatter.format(name);
+
+        delete this.listeners[formattedEventName];
+    }
+
+    /**
+     *
+     * @param type
+     */
+    public getSocketMessage(type: MessageType): Message {
+        return new Message(this.options.token, type);
+    }
+
+    /**
+     *
+     * @param message
+     */
+    public send(message: Message) {
+        this.websocketInstance.send(JSON.stringify(message.toNetworkJson()));
+    }
+
+    /**
      * Routes an incoming massage for processing.
      *
      * @param message
@@ -91,7 +118,8 @@ export class LarasocketManager {
             const formattedEventName = this.eventFormatter.format(message.event);
 
             if (this.listeners[formattedEventName]) {
-                this.listeners[formattedEventName](message);
+                const payloadForListeners = message.payload;
+                this.listeners[formattedEventName](payloadForListeners);
             }
         }
     }
@@ -100,14 +128,14 @@ export class LarasocketManager {
      * Initialize an websocket connection.
      */
     protected initializeSocket(): WebSocket {
-        const socket = new WebSocket('wss://wss.zachvv.me');
+        const socket = new WebSocket('wss://ws.larasocket.com');
 
         // Connection opened
         socket.addEventListener('open', (event) => {
             // tslint:disable-next-line
             console.log("Connection openned", event);
 
-            let message = this.getSocketMessage(MessageType.LINK_CONNECTION);
+            const message = this.getSocketMessage(MessageType.LINK_CONNECTION);
 
             this.send(message);
         });
@@ -117,11 +145,18 @@ export class LarasocketManager {
             // tslint:disable-next-line
             console.log("Incoming message", event);
 
-            let { action } = event.data;
+            const rawMessage = event.data;
 
-            let message = this.getSocketMessage(action);
+            try {
+                const rawJson = JSON.parse(rawMessage);
 
-            this.route(message);
+                const message = Message.make(this.options.token, rawJson);
+
+                this.route(message);
+            } catch (e) {
+                // tslint:disable-next-line
+                console.log("Failed parsing incoming message: ", e);
+            }
         });
 
         return socket;
@@ -156,15 +191,5 @@ export class LarasocketManager {
         }
 
         throw new Error('Need either Vue.http, axios, or jQuery');
-    }
-
-    protected getSocketMessage(type: MessageType): Message {
-        const message = new Message(this.options.token, type);
-
-        return message;
-    }
-
-    protected send(message: Message) {
-        this.websocketInstance.send(JSON.stringify(message.toNetworkJson()));
     }
 }

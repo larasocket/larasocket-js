@@ -1,4 +1,4 @@
-import { Channel, PresenceChannel } from '../channel';
+import { Channel } from '../channel';
 
 export abstract class Connector {
     /**
@@ -83,7 +83,7 @@ export abstract class Connector {
     /**
      * Get a presence channel instance by name.
      */
-    abstract presenceChannel(channel: string): PresenceChannel;
+    // abstract presenceChannel(channel: string): PresenceChannel;
 
     /**
      * Leave the given channel, as well as its private and presence variants.
