@@ -6,7 +6,6 @@ import {EventFormatter} from "./event-formatter";
  * Event name formatter
  */
 export class LarasocketManager {
-
     /**
      *
      */
@@ -38,14 +37,22 @@ export class LarasocketManager {
     }
 
     /**
+     *
+     */
+    disconnect() {
+        this.websocketInstance.close();
+    }
+
+    /**
      * Subscribe to a given channel.
      *
      * @param channel
      */
     subscribe(channel: LarasocketChannel) {
-        this.authenticate(channel).then(() => {
+        this.authenticate(channel).then((response) => {
             const subscribeMessage = this.getSocketMessage(MessageType.SUBSCRIBE);
 
+            subscribeMessage.payload = response;
             subscribeMessage.channel = channel;
 
             this.send(subscribeMessage);
@@ -114,6 +121,11 @@ export class LarasocketManager {
             return;
         }
 
+        if (message.action === MessageType.RESPONSE) {
+            console.log("got socket response:", message.payload);
+            return;
+        }
+
         if (message.event) {
             const formattedEventName = this.eventFormatter.format(message.event);
 
@@ -166,7 +178,7 @@ export class LarasocketManager {
         if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
             return this.getAuthNetworkPromise(channel.name)
                 .then((response: any) => {
-                    return 'success';
+                    return response.data;
                 });
         }
 

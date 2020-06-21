@@ -1,6 +1,6 @@
 import {LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel,} from '../channel';
 import {Connector} from "./connector";
-import {LarasocketManager} from "../util/larasocket-manager";
+import {LarasocketManager} from "../util";
 
 /**
  * This class creates a connector to a Socket.io server.
@@ -9,7 +9,7 @@ export class LarasocketConnector extends Connector {
     /**
      * The websocket connection instance.
      */
-    websocket: any;
+    websocket!: LarasocketManager;
 
     /**
      * All of the subscribed channel names.
@@ -21,8 +21,6 @@ export class LarasocketConnector extends Connector {
      */
     connect(): void {
         this.websocket = new LarasocketManager(this.options);
-
-        return this.websocket;
     }
 
     /**
@@ -99,7 +97,7 @@ export class LarasocketConnector extends Connector {
      * Get the socket ID for the connection.
      */
     socketId(): string {
-        return this.websocket.id;
+        return 'Unsused for Larasocket... you are still awesome though ;)'; // The server always knows the socketId. All it needs to know is if we want to ->onlyToOthers(). //this.websocket.connectionId || '';
     }
 
     /**

@@ -6,12 +6,19 @@ export enum MessageType {
     UNSUBSCRIBE = 'UNSUBSCRIBE',
     COMMUNICATION = 'COMMUNICATION',
     WHISPER = 'WHISPER',
+    RESPONSE = 'RESPONSE',
 }
 
 /**
  * SocketMessage
  */
 export class Message {
+
+    /**
+     * Only actually present in RESPONSE messages.
+     */
+    connection_id?: string;
+
     /**
      * Laravel Websocket API key.
      */
@@ -25,17 +32,17 @@ export class Message {
     /**
      * Laravel Websocket API key.
      */
-    channel: LarasocketChannel | null = null;
+    channel?: LarasocketChannel;
 
     /**
      * Event namespace.
      */
-    event: string | null = null;
+    event?: string;
 
     /**
      * Event namespace.
      */
-    payload: any | null = null;
+    payload?: any;
 
     /**
      * Create a new class instance.
