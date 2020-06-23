@@ -1,6 +1,6 @@
-import {Message, MessageType} from "./message";
-import {LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel} from "../channel";
-import {EventFormatter} from "./event-formatter";
+import { Message, MessageType } from './message';
+import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel } from '../channel';
+import { EventFormatter } from './event-formatter';
 
 /**
  * Event name formatter
@@ -19,7 +19,7 @@ export class LarasocketManager {
     /**
      *
      */
-    protected listeners: { [key:string]: (message: Message) => void };
+    protected listeners: { [key: string]: (message: Message) => void };
 
     /**
      * The event formatter.
@@ -117,13 +117,13 @@ export class LarasocketManager {
      * @param message
      */
     protected route(message: Message) {
-        if (! message.action) {
+        if (!message.action) {
             return;
         }
 
         if (message.action === MessageType.RESPONSE) {
             // tslint:disable-next-line
-            console.log("got socket response:", message.payload);
+            console.log('got socket response:', message.payload);
             return;
         }
 
@@ -146,7 +146,7 @@ export class LarasocketManager {
         // Connection opened
         socket.addEventListener('open', (event) => {
             // tslint:disable-next-line
-            console.log("Connection openned", event);
+            console.log('Connection openned', event);
 
             const message = this.getSocketMessage(MessageType.LINK_CONNECTION);
 
@@ -156,7 +156,7 @@ export class LarasocketManager {
         // Listen for messages
         socket.addEventListener('message', (event) => {
             // tslint:disable-next-line
-            console.log("Incoming message", event);
+            console.log('Incoming message', event);
 
             const rawMessage = event.data;
 
@@ -168,7 +168,7 @@ export class LarasocketManager {
                 this.route(message);
             } catch (e) {
                 // tslint:disable-next-line
-                console.log("Failed parsing incoming message: ", e);
+                console.log('Failed parsing incoming message: ', e);
             }
         });
 
@@ -177,13 +177,12 @@ export class LarasocketManager {
 
     protected authenticate(channel: LarasocketChannel): Promise<any> {
         if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
-            return this.getAuthNetworkPromise(channel.name)
-                .then((response: any) => {
-                    return response.data;
-                });
+            return this.getAuthNetworkPromise(channel.name).then((response: any) => {
+                return response.data;
+            });
         }
 
-        return Promise.resolve() // dummy Promise. No auth for public channels.
+        return Promise.resolve(); // dummy Promise. No auth for public channels.
     }
 
     protected getAuthNetworkPromise(channelName: string): Promise<any> {

@@ -1,4 +1,4 @@
-import {LarasocketChannel} from "../channel";
+import { LarasocketChannel } from '../channel';
 
 export enum MessageType {
     LINK_CONNECTION = 'LINK_CONNECTION',
@@ -68,11 +68,11 @@ export class Message {
      */
     toNetworkJson(): object {
         return {
-            'event': this.event,
-            'token': this.token,
-            'action': this.action,
-            'payload': this.payload,
-            'channel': this.channel?.name,
+            event: this.event,
+            token: this.token,
+            action: this.action,
+            payload: this.payload,
+            channel: this.channel?.name,
         };
     }
 }

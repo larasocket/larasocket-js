@@ -1,9 +1,9 @@
 /**
  * This class represents a Socket.io channel.
  */
-import {Channel} from './channel';
-import {EventFormatter} from '../util';
-import {LarasocketManager} from "../util";
+import { Channel } from './channel';
+import { EventFormatter } from '../util';
+import { LarasocketManager } from '../util';
 
 export class LarasocketChannel extends Channel {
     eventFormatter: EventFormatter;

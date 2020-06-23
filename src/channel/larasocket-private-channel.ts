@@ -1,5 +1,5 @@
-import {LarasocketChannel} from './larasocket-channel';
-import {MessageType} from "../util/message";
+import { LarasocketChannel } from './larasocket-channel';
+import { MessageType } from '../util/message';
 
 /**
  * This class represents a Socket.io presence channel.

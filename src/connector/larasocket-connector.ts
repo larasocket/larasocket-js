@@ -1,6 +1,6 @@
-import {LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel,} from '../channel';
-import {Connector} from "./connector";
-import {LarasocketManager} from "../util";
+import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel } from '../channel';
+import { Connector } from './connector';
+import { LarasocketManager } from '../util';
 
 /**
  * This class creates a connector to a Socket.io server.
