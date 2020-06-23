@@ -13,12 +13,6 @@ export enum MessageType {
  * SocketMessage
  */
 export class Message {
-
-    /**
-     * Only actually present in RESPONSE messages.
-     */
-    connection_id?: string;
-
     /**
      * Laravel Websocket API key.
      */

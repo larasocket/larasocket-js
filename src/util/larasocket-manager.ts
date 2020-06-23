@@ -122,6 +122,7 @@ export class LarasocketManager {
         }
 
         if (message.action === MessageType.RESPONSE) {
+            // tslint:disable-next-line
             console.log("got socket response:", message.payload);
             return;
         }
