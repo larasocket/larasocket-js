@@ -1,3 +1,3 @@
 import { LarasocketConnector } from './connector';
 
-exports.broadcaster = LarasocketConnector;
+export default LarasocketConnector;

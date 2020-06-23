@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exzachlyvv/larasocket-js.git"
+    "url": "git+https://github.com/larasocket/larasocket-js.git"
   },
   "keywords": [
     "echo",
@@ -29,9 +29,9 @@
   "author": "Zach Vander Velden",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/exzachlyvv/larasocket-js/issues"
+    "url": "https://github.com/larasocket/larasocket-js/issues"
   },
-  "homepage": "https://github.com/exzachlyvv/larasocket-js#readme",
+  "homepage": "https://github.com/larasocket/larasocket-js#readme",
   "devDependencies": {
     "@types/jest": "^26.0.0",
     "jest": "^26.0.1",
