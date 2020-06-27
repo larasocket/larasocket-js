@@ -1,6 +1,9 @@
-import { Message, MessageType } from './message';
 import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel } from '../channel';
 import { EventFormatter } from './event-formatter';
+import {IncomingMessage, IncomingMessageType} from "./incoming-message";
+import {OutgoingMessage, OutgoingMessageType} from "./outgoing-message";
+import {OutgoingNetworkInterface} from "./outgoing-network-interface";
+import {LinkMessage} from "./link-message";
 
 /**
  * Event name formatter
@@ -14,12 +17,27 @@ export class LarasocketManager {
     /**
      *
      */
-    protected websocketInstance: WebSocket;
+    protected websocketInstance?: WebSocket;
 
     /**
      *
      */
-    protected listeners: { [key: string]: (message: Message) => void };
+    protected queuedMessages: OutgoingMessage[] = [];
+
+    /**
+     *
+     */
+    protected websocketInstanceIsInitializaing = false;
+
+    /**
+     *
+     */
+    public connectionId!: string;
+
+    /**
+     *
+     */
+    protected listeners: { [key: string]: (message: IncomingMessage) => void };
 
     /**
      * The event formatter.
@@ -33,14 +51,13 @@ export class LarasocketManager {
         this.options = options;
         this.listeners = {};
         this.eventFormatter = new EventFormatter(options.namespace);
-        this.websocketInstance = this.initializeSocket();
     }
 
     /**
      *
      */
     disconnect() {
-        this.websocketInstance.close();
+        this.websocketInstance?.close();
     }
 
     /**
@@ -49,8 +66,10 @@ export class LarasocketManager {
      * @param channel
      */
     subscribe(channel: LarasocketChannel) {
+        // tslint:disable-next-line
+        console.log('Subscribing to:', channel);
         this.authenticate(channel).then((response) => {
-            const subscribeMessage = this.getSocketMessage(MessageType.SUBSCRIBE);
+            const subscribeMessage = this.getSocketMessage(OutgoingMessageType.SUBSCRIBE);
 
             subscribeMessage.payload = response;
             subscribeMessage.channel = channel;
@@ -65,7 +84,7 @@ export class LarasocketManager {
      * @param channel
      */
     unsubscribe(channel: LarasocketChannel) {
-        const unsubscribeMessage = this.getSocketMessage(MessageType.UNSUBSCRIBE);
+        const unsubscribeMessage = this.getSocketMessage(OutgoingMessageType.UNSUBSCRIBE);
 
         unsubscribeMessage.channel = channel;
 
@@ -78,7 +97,7 @@ export class LarasocketManager {
      * @param name
      * @param listener
      */
-    on(name: string, listener: (message: Message) => void) {
+    on(name: string, listener: (message: IncomingMessage) => void) {
         const formattedEventName = this.eventFormatter.format(name);
 
         this.listeners[formattedEventName] = listener;
@@ -99,16 +118,24 @@ export class LarasocketManager {
      *
      * @param type
      */
-    public getSocketMessage(type: MessageType): Message {
-        return new Message(this.options.token, type);
+    public getSocketMessage(type: OutgoingMessageType): OutgoingMessage {
+        return new OutgoingMessage(this.options.token, type);
     }
 
     /**
      *
      * @param message
      */
-    public send(message: Message) {
-        this.websocketInstance.send(JSON.stringify(message.toNetworkJson()));
+    public send(message: OutgoingMessage) {
+        if (this.websocketInstanceIsInitializaing) {
+            this.queuedMessages.push(message);
+            return;
+        }
+
+        this.getWebsocketInstance((socket) => {
+            message.connectionId = this.connectionId; // sometimes, we dont have connectionId information until this callback.
+            socket.send(JSON.stringify(message.toNetworkJson()))
+        });
     }
 
     /**
@@ -116,17 +143,7 @@ export class LarasocketManager {
      *
      * @param message
      */
-    protected route(message: Message) {
-        if (!message.action) {
-            return;
-        }
-
-        if (message.action === MessageType.RESPONSE) {
-            // tslint:disable-next-line
-            console.log('got socket response:', message.payload);
-            return;
-        }
-
+    protected route(message: IncomingMessage) {
         if (message.event) {
             const formattedEventName = this.eventFormatter.format(message.event);
 
@@ -138,43 +155,10 @@ export class LarasocketManager {
     }
 
     /**
-     * Initialize an websocket connection.
+     * Authenticate a channel subscription.
+     *
+     * @param channel
      */
-    protected initializeSocket(): WebSocket {
-        const socket = new WebSocket('wss://ws.larasocket.com');
-
-        // Connection opened
-        socket.addEventListener('open', (event) => {
-            // tslint:disable-next-line
-            console.log('Connection openned', event);
-
-            const message = this.getSocketMessage(MessageType.LINK_CONNECTION);
-
-            this.send(message);
-        });
-
-        // Listen for messages
-        socket.addEventListener('message', (event) => {
-            // tslint:disable-next-line
-            console.log('Incoming message', event);
-
-            const rawMessage = event.data;
-
-            try {
-                const rawJson = JSON.parse(rawMessage);
-
-                const message = Message.make(this.options.token, rawJson);
-
-                this.route(message);
-            } catch (e) {
-                // tslint:disable-next-line
-                console.log('Failed parsing incoming message: ', e);
-            }
-        });
-
-        return socket;
-    }
-
     protected authenticate(channel: LarasocketChannel): Promise<any> {
         if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
             return this.getAuthNetworkPromise(channel.name).then((response: any) => {
@@ -185,6 +169,10 @@ export class LarasocketManager {
         return Promise.resolve(); // dummy Promise. No auth for public channels.
     }
 
+    /**
+     *
+     * @param channelName
+     */
     protected getAuthNetworkPromise(channelName: string): Promise<any> {
         const endpoint = this.options.authEndpoint;
 
@@ -203,5 +191,86 @@ export class LarasocketManager {
         }
 
         throw new Error('Need either Vue.http, axios, or jQuery');
+    }
+
+    /**
+     * Used to link a socket connection to a db connection.
+     */
+    protected uuidv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    /**
+     *
+     */
+    protected getWebsocketInstance(ready: (socket: WebSocket) => void) {
+        if (this.websocketInstance) {
+            ready(this.websocketInstance); // dummy Promise. No auth for public channels.
+        }
+
+        this.initializeSocket(ready);
+    }
+
+    /**
+     *
+     */
+    protected websocketInstanceReady() {
+        this.websocketInstanceIsInitializaing = false;
+
+        while (this.queuedMessages.length) {
+            let message = this.queuedMessages.pop();
+            if (message) {
+                this.send(message);
+            }
+        }
+    }
+
+    /**
+     * Initialize an websocket connection.
+     */
+    protected initializeSocket(ready: (socket: WebSocket) => void){
+        const token = encodeURIComponent(this.options.token);
+        const uuid = this.uuidv4();
+        const socket = new WebSocket(`wss://ws.larasocket.com?token=${token}&uuid=${uuid}`);
+        this.websocketInstance = socket;
+        this.websocketInstanceIsInitializaing = true;
+
+        // Connection opened
+        socket.addEventListener('open', (event) => {
+            // tslint:disable-next-line
+            console.log('Connected... now linking');
+            socket.send(JSON.stringify(new LinkMessage(token, uuid).toNetworkJson()))
+        });
+
+        // Listen for messages
+        socket.addEventListener('message', (event) => {
+            // tslint:disable-next-line
+            console.log('Incoming message', event);
+
+            const rawMessage = event.data;
+
+            try {
+                const rawJson = JSON.parse(rawMessage);
+
+                const message = new IncomingMessage(rawJson);
+
+                if (message.action === IncomingMessageType.LINKED) {
+                    this.connectionId = message.connection_id!;
+                    // tslint:disable-next-line
+                    console.log('Larasocket connected.');
+                    this.websocketInstanceReady();
+                    ready(socket);
+                } else {
+                    this.route(message);
+                }
+
+            } catch (e) {
+                // tslint:disable-next-line
+                console.log('Failed parsing incoming message: ', e);
+            }
+        });
     }
 }

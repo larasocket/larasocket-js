@@ -97,7 +97,7 @@ export class LarasocketConnector extends Connector {
      * Get the socket ID for the connection.
      */
     socketId(): string {
-        return 'Unsused for Larasocket... you are still awesome though ;)'; // The server always knows the socketId. All it needs to know is if we want to ->onlyToOthers(). //this.websocket.connectionId || '';
+        return this.websocket.connectionId!;
     }
 
     /**
