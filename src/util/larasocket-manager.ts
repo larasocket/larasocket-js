@@ -197,8 +197,11 @@ export class LarasocketManager {
      * Used to link a socket connection to a db connection.
      */
     protected uuidv4() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            // tslint:disable-next-line
+            const r = Math.random() * 16 | 0;
+            // tslint:disable-next-line
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     }
@@ -221,7 +224,7 @@ export class LarasocketManager {
         this.websocketInstanceIsInitializaing = false;
 
         while (this.queuedMessages.length) {
-            let message = this.queuedMessages.pop();
+            const message = this.queuedMessages.pop();
             if (message) {
                 this.send(message);
             }
@@ -258,7 +261,7 @@ export class LarasocketManager {
                 const message = new IncomingMessage(rawJson);
 
                 if (message.action === IncomingMessageType.LINKED) {
-                    this.connectionId = message.connection_id!;
+                    this.connectionId = message.connectionId!;
                     // tslint:disable-next-line
                     console.log('Larasocket connected.');
                     this.websocketInstanceReady();

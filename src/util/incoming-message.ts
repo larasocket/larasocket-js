@@ -22,7 +22,7 @@ export class IncomingMessage extends Message {
     /**
      * Event namespace.
      */
-    connection_id?: string;
+    connectionId?: string;
 
     /**
      * Event namespace.
@@ -37,6 +37,6 @@ export class IncomingMessage extends Message {
         this.action = rawJson.action;
         this.event = rawJson.event;
         this.payload = rawJson.payload;
-        this.connection_id = rawJson.connection_id;
+        this.connectionId = rawJson.connection_id;
     }
 }
