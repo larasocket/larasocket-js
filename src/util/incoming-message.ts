@@ -1,5 +1,5 @@
 import { LarasocketChannel } from '../channel';
-import {Message} from "./message";
+import { Message } from './message';
 
 export enum IncomingMessageType {
     LINKED = 'linked',

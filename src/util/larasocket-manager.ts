@@ -1,9 +1,9 @@
 import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel } from '../channel';
 import { EventFormatter } from './event-formatter';
-import {IncomingMessage, IncomingMessageType} from "./incoming-message";
-import {OutgoingMessage, OutgoingMessageType} from "./outgoing-message";
-import {OutgoingNetworkInterface} from "./outgoing-network-interface";
-import {LinkMessage} from "./link-message";
+import { IncomingMessage, IncomingMessageType } from './incoming-message';
+import { OutgoingMessage, OutgoingMessageType } from './outgoing-message';
+import { OutgoingNetworkInterface } from './outgoing-network-interface';
+import { LinkMessage } from './link-message';
 
 /**
  * Event name formatter
@@ -134,7 +134,7 @@ export class LarasocketManager {
 
         this.getWebsocketInstance((socket) => {
             message.connectionId = this.connectionId; // sometimes, we dont have connectionId information until this callback.
-            socket.send(JSON.stringify(message.toNetworkJson()))
+            socket.send(JSON.stringify(message.toNetworkJson()));
         });
     }
 
@@ -199,9 +199,9 @@ export class LarasocketManager {
     protected uuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             // tslint:disable-next-line
-            const r = Math.random() * 16 | 0;
+            const r = (Math.random() * 16) | 0;
             // tslint:disable-next-line
-            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
     }
@@ -234,7 +234,7 @@ export class LarasocketManager {
     /**
      * Initialize an websocket connection.
      */
-    protected initializeSocket(ready: (socket: WebSocket) => void){
+    protected initializeSocket(ready: (socket: WebSocket) => void) {
         const token = encodeURIComponent(this.options.token);
         const uuid = this.uuidv4();
         const socket = new WebSocket(`wss://ws.larasocket.com?token=${token}&uuid=${uuid}`);
@@ -245,7 +245,7 @@ export class LarasocketManager {
         socket.addEventListener('open', (event) => {
             // tslint:disable-next-line
             console.log('Connected... now linking');
-            socket.send(JSON.stringify(new LinkMessage(token, uuid).toNetworkJson()))
+            socket.send(JSON.stringify(new LinkMessage(token, uuid).toNetworkJson()));
         });
 
         // Listen for messages
@@ -269,7 +269,6 @@ export class LarasocketManager {
                 } else {
                     this.route(message);
                 }
-
             } catch (e) {
                 // tslint:disable-next-line
                 console.log('Failed parsing incoming message: ', e);

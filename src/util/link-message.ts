@@ -1,5 +1,5 @@
-import {Message} from "./message";
-import {OutgoingNetworkInterface} from "./outgoing-network-interface";
+import { Message } from './message';
+import { OutgoingNetworkInterface } from './outgoing-network-interface';
 
 /**
  * LinkMessage

@@ -4,7 +4,6 @@ import { LarasocketChannel } from '../channel';
  * SocketMessage
  */
 export class Message {
-
     /**
      * Laravel Websocket API key.
      */
@@ -45,6 +44,4 @@ export class Message {
     //
     //     return message;
     // }
-
-
 }

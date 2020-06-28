@@ -1,6 +1,6 @@
 {
   "name": "larasocket-js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Echo friendly websocket solution for Laravel applications",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

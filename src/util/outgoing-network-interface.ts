@@ -1,4 +1,3 @@
-
 export interface OutgoingNetworkInterface {
-    toNetworkJson(): object
+    toNetworkJson(): object;
 }
