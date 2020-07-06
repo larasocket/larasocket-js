@@ -248,7 +248,9 @@ export class LarasocketManager {
         this.websocketInitializationPromise = new Promise((resolve, reject) => {
             const token = encodeURIComponent(this.options.token);
             const uuid = this.uuid;
-            const socket = new WebSocket(`wss://avhbh1wztc.execute-api.us-east-1.amazonaws.com/local?token=${token}&uuid=${uuid}`);
+            const socket = new WebSocket(
+                `wss://avhbh1wztc.execute-api.us-east-1.amazonaws.com/local?token=${token}&uuid=${uuid}`,
+            );
 
             // Connection opened
             socket.addEventListener('open', (event) => {
