@@ -97,7 +97,7 @@ export class LarasocketConnector extends Connector {
      * Get the socket ID for the connection.
      */
     socketId(): string {
-        return this.websocket.connectionId!;
+        return this.websocket.connectionId;
     }
 
     /**

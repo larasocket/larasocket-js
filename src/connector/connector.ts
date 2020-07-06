@@ -1,4 +1,4 @@
-import { Channel } from '../channel';
+import {Channel, LarasocketPresenceChannel} from '../channel';
 
 export abstract class Connector {
     /**
@@ -83,7 +83,7 @@ export abstract class Connector {
     /**
      * Get a presence channel instance by name.
      */
-    // abstract presenceChannel(channel: string): PresenceChannel;
+    abstract presenceChannel(channel: string): LarasocketPresenceChannel;
 
     /**
      * Leave the given channel, as well as its private and presence variants.

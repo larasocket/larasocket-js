@@ -12,6 +12,11 @@ export class LarasocketManager {
     /**
      *
      */
+    public uuid: string;
+
+    /**
+     *
+     */
     protected csrf?: string;
 
     /**
@@ -27,12 +32,7 @@ export class LarasocketManager {
     /**
      *
      */
-    protected queuedMessages: OutgoingMessage[] = [];
-
-    /**
-     *
-     */
-    protected websocketInstanceIsInitializaing = false;
+    protected websocketInitializationPromise?: Promise<WebSocket>;
 
     /**
      *
@@ -57,6 +57,7 @@ export class LarasocketManager {
         this.listeners = {};
         this.eventFormatter = new EventFormatter(options.namespace);
         this.csrf = options.auth.headers['X-CSRF-TOKEN'];
+        this.uuid = this.uuidv4();
     }
 
     /**
@@ -131,11 +132,6 @@ export class LarasocketManager {
      * @param message
      */
     public send(message: OutgoingMessage) {
-        if (this.websocketInstanceIsInitializaing) {
-            this.queuedMessages.push(message);
-            return;
-        }
-
         this.getWebsocketInstance().then((socket) => {
             message.connectionId = this.connectionId; // sometimes, we dont have connectionId information until this callback.
             socket.send(JSON.stringify(message.toNetworkJson()));
@@ -236,27 +232,23 @@ export class LarasocketManager {
     /**
      *
      */
-    protected websocketInstanceReady() {
-        this.websocketInstanceIsInitializaing = false;
-
-        while (this.queuedMessages.length) {
-            const message = this.queuedMessages.pop();
-            if (message) {
-                this.send(message);
-            }
-        }
+    protected websocketInstanceReady(socket: WebSocket) {
+        this.websocketInstance = socket;
+        this.websocketInitializationPromise = undefined;
     }
 
     /**
      * Initialize an websocket connection.
      */
     protected initializeSocket(): Promise<WebSocket> {
-        return new Promise((resolve, reject) => {
+        if (this.websocketInitializationPromise) {
+            return this.websocketInitializationPromise;
+        }
+
+        this.websocketInitializationPromise = new Promise((resolve, reject) => {
             const token = encodeURIComponent(this.options.token);
-            const uuid = this.uuidv4();
-            const socket = new WebSocket(`wss://ws.larasocket.com?token=${token}&uuid=${uuid}`);
-            this.websocketInstance = socket;
-            this.websocketInstanceIsInitializaing = true;
+            const uuid = this.uuid;
+            const socket = new WebSocket(`wss://avhbh1wztc.execute-api.us-east-1.amazonaws.com/local?token=${token}&uuid=${uuid}`);
 
             // Connection opened
             socket.addEventListener('open', (event) => {
@@ -274,7 +266,7 @@ export class LarasocketManager {
 
                     if (message.action === IncomingMessageType.LINKED) {
                         this.connectionId = message.connectionId!;
-                        this.websocketInstanceReady();
+                        this.websocketInstanceReady(socket);
                         resolve(socket);
                     } else {
                         this.route(message);
@@ -284,5 +276,7 @@ export class LarasocketManager {
                 }
             });
         });
+
+        return this.websocketInitializationPromise;
     }
 }
