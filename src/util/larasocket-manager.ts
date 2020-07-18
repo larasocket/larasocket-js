@@ -2,7 +2,7 @@ import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel 
 import { EventFormatter } from './event-formatter';
 import { IncomingMessage, IncomingMessageType } from './incoming-message';
 import { OutgoingMessage, OutgoingMessageType } from './outgoing-message';
-import {LarasocketWebsocket} from "./larasocket-websocket";
+import { LarasocketWebsocket } from './larasocket-websocket';
 
 /**
  * Event name formatter
@@ -40,7 +40,11 @@ export class LarasocketManager {
         this.options = options;
         this.listeners = {};
         this.eventFormatter = new EventFormatter(options.namespace);
-        this.websocketInstance = new LarasocketWebsocket(options, (d) => this.route(d), () => this.reconnect());
+        this.websocketInstance = new LarasocketWebsocket(
+            options,
+            (d) => this.route(d),
+            () => this.reconnect(),
+        );
     }
 
     /**
@@ -134,7 +138,7 @@ export class LarasocketManager {
     /**
      *
      */
-    socketId() : string {
+    socketId(): string {
         return this.websocketInstance.connectionId;
     }
 

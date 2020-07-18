@@ -1,7 +1,7 @@
 import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel } from '../channel';
 import { IncomingMessage, IncomingMessageType } from './incoming-message';
 import { LinkMessage } from './link-message';
-import {OutgoingMessage} from "./outgoing-message";
+import { OutgoingMessage } from './outgoing-message';
 
 /**
  * Event name formatter
@@ -70,7 +70,11 @@ export class LarasocketWebsocket {
     /**
      * Create a new class instance.
      */
-    constructor(options: any, onMessageListener: (data: IncomingMessage) => void, onReconnectListener: (socket: LarasocketWebsocket) => void) {
+    constructor(
+        options: any,
+        onMessageListener: (data: IncomingMessage) => void,
+        onReconnectListener: (socket: LarasocketWebsocket) => void,
+    ) {
         this.options = options;
         this.csrf = options.auth.headers['X-CSRF-TOKEN'];
         this.uuid = this.uuidv4();
@@ -219,7 +223,7 @@ export class LarasocketWebsocket {
             // tslint:disable-next-line
             console.log(`[LARASOCKET DEBUG]: onclose -> `, event);
             // tslint:disable-next-line
-            console.log(`Reconnecting in ${timeout/1000}s`);
+            console.log(`Reconnecting in ${timeout / 1000}s`);
         }
 
         if (this.currentTimeout) {
