@@ -54,7 +54,7 @@ export class LarasocketManager {
      * Triggers subscription to each previously subscribed channel.
      */
     reconnect() {
-        for (let channel of Object.values(this.subscribedChannels)) {
+        for (const channel of Object.values(this.subscribedChannels)) {
             this.subscribe(channel);
         }
     }

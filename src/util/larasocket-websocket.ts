@@ -200,6 +200,7 @@ export class LarasocketWebsocket {
      */
     private onOpen(socket: WebSocket, event: Event) {
         if (this.options.debug) {
+            // tslint:disable-next-line
             console.log(`[LARASOCKET DEBUG]: onopen -> `, event);
         }
 
@@ -213,9 +214,11 @@ export class LarasocketWebsocket {
      * @param event
      */
     private onClose(event: CloseEvent) {
-        let timeout = this.getTimeout();
+        const timeout = this.getTimeout();
         if (this.options.debug) {
+            // tslint:disable-next-line
             console.log(`[LARASOCKET DEBUG]: onclose -> `, event);
+            // tslint:disable-next-line
             console.log(`Reconnecting in ${timeout/1000}s`);
         }
 
@@ -233,7 +236,9 @@ export class LarasocketWebsocket {
      */
     private onError(event: Event) {
         if (this.options.debug) {
+            // tslint:disable-next-line
             console.log(`[LARASOCKET DEBUG]: onerror -> `, event);
+            // tslint:disable-next-line
             console.log(`Error encountered. Closing socket.`);
         }
 
@@ -250,6 +255,7 @@ export class LarasocketWebsocket {
      */
     private onMessage(socket: WebSocket, resolve: (t: any) => void, reject: (t: any) => void, event: MessageEvent) {
         if (this.options.debug) {
+            // tslint:disable-next-line
             console.log(`[LARASOCKET DEBUG]: onmessage -> `, event);
         }
 
