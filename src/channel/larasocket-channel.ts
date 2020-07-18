@@ -40,7 +40,6 @@ export class LarasocketChannel extends Channel {
         this.options = options;
 
         this.subscribe();
-        this.configureReconnector();
     }
 
     /**
@@ -85,18 +84,6 @@ export class LarasocketChannel extends Channel {
     on(event: string, callback: (data: any) => void): void {
         this.socket.on(event, callback);
         this.bind(event, callback);
-    }
-
-    /**
-     * Attach a 'reconnect' listener and bind the event.
-     */
-    configureReconnector(): void {
-        // const listener = () => {
-        //     this.subscribe();
-        // };
-        //
-        // this.socket.on('reconnect', listener);
-        // this.bind('reconnect', listener);
     }
 
     /**

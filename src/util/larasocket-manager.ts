@@ -2,8 +2,7 @@ import { LarasocketChannel, LarasocketPresenceChannel, LarasocketPrivateChannel 
 import { EventFormatter } from './event-formatter';
 import { IncomingMessage, IncomingMessageType } from './incoming-message';
 import { OutgoingMessage, OutgoingMessageType } from './outgoing-message';
-import { OutgoingNetworkInterface } from './outgoing-network-interface';
-import { LinkMessage } from './link-message';
+import {LarasocketWebsocket} from "./larasocket-websocket";
 
 /**
  * Event name formatter
@@ -12,32 +11,17 @@ export class LarasocketManager {
     /**
      *
      */
-    public uuid: string;
-
-    /**
-     *
-     */
-    protected csrf?: string;
-
-    /**
-     *
-     */
     protected options: any;
 
     /**
      *
      */
-    protected websocketInstance?: WebSocket;
+    protected websocketInstance: LarasocketWebsocket;
 
     /**
      *
      */
-    protected websocketInitializationPromise?: Promise<WebSocket>;
-
-    /**
-     *
-     */
-    public connectionId!: string;
+    protected subscribedChannels: { [key: string]: LarasocketChannel } = {};
 
     /**
      *
@@ -56,15 +40,23 @@ export class LarasocketManager {
         this.options = options;
         this.listeners = {};
         this.eventFormatter = new EventFormatter(options.namespace);
-        this.csrf = options.auth.headers['X-CSRF-TOKEN'];
-        this.uuid = this.uuidv4();
+        this.websocketInstance = new LarasocketWebsocket(options, (d) => this.route(d), () => this.reconnect());
     }
 
     /**
      *
      */
     disconnect() {
-        this.websocketInstance?.close();
+        this.websocketInstance.close();
+    }
+
+    /**
+     * Triggers subscription to each previously subscribed channel.
+     */
+    reconnect() {
+        for (let channel of Object.values(this.subscribedChannels)) {
+            this.subscribe(channel);
+        }
     }
 
     /**
@@ -74,6 +66,8 @@ export class LarasocketManager {
      */
     subscribe(channel: LarasocketChannel) {
         this.authenticate(channel).then((response) => {
+            this.subscribedChannels[channel.name] = channel; // track so we can reconnect if needed.
+
             const subscribeMessage = this.getSocketMessage(OutgoingMessageType.SUBSCRIBE);
 
             subscribeMessage.payload = response;
@@ -89,6 +83,8 @@ export class LarasocketManager {
      * @param channel
      */
     unsubscribe(channel: LarasocketChannel) {
+        delete this.subscribedChannels[channel.name]; // track so we can reconnect if needed.
+
         const unsubscribeMessage = this.getSocketMessage(OutgoingMessageType.UNSUBSCRIBE);
 
         unsubscribeMessage.channel = channel;
@@ -123,7 +119,7 @@ export class LarasocketManager {
      *
      * @param type
      */
-    public getSocketMessage(type: OutgoingMessageType): OutgoingMessage {
+    getSocketMessage(type: OutgoingMessageType): OutgoingMessage {
         return new OutgoingMessage(this.options.token, type);
     }
 
@@ -131,11 +127,15 @@ export class LarasocketManager {
      *
      * @param message
      */
-    public send(message: OutgoingMessage) {
-        this.getWebsocketInstance().then((socket) => {
-            message.connectionId = this.connectionId; // sometimes, we dont have connectionId information until this callback.
-            socket.send(JSON.stringify(message.toNetworkJson()));
-        });
+    send(message: OutgoingMessage) {
+        this.websocketInstance.send(message);
+    }
+
+    /**
+     *
+     */
+    socketId() : string {
+        return this.websocketInstance.connectionId;
     }
 
     /**
@@ -166,122 +166,11 @@ export class LarasocketManager {
      */
     protected authenticate(channel: LarasocketChannel): Promise<any> {
         if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
-            return this.getAuthNetworkPromise(channel.name).then((response: any) => {
+            return this.websocketInstance.getAuthNetworkPromise(channel.name).then((response: any) => {
                 return response.data;
             });
         }
 
         return Promise.resolve(); // dummy Promise. No auth for public channels.
-    }
-
-    /**
-     *
-     * @param channelName
-     */
-    protected getAuthNetworkPromise(channelName: string): Promise<any> {
-        return this.getWebsocketInstance().then((socket) => {
-            const endpoint = this.options.authEndpoint;
-
-            if (typeof Vue === 'function' && Vue.http) {
-                return Vue.http.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
-            }
-
-            if (typeof axios === 'function') {
-                return axios.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
-            }
-
-            if (typeof jQuery === 'function') {
-                return jQuery.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
-            }
-
-            throw new Error('Need either Vue.http, axios, or jQuery');
-        });
-    }
-
-    /**
-     * Used to link a socket connection to a db connection.
-     */
-    protected uuidv4() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            // tslint:disable-next-line
-            const r = (Math.random() * 16) | 0;
-            // tslint:disable-next-line
-            const v = c === 'x' ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-        });
-    }
-
-    /**
-     *
-     */
-    protected getWebsocketInstance(): Promise<WebSocket> {
-        if (this.websocketInstance) {
-            return Promise.resolve(this.websocketInstance);
-        }
-
-        return this.initializeSocket();
-    }
-
-    /**
-     *
-     */
-    protected websocketInstanceReady(socket: WebSocket) {
-        this.websocketInstance = socket;
-        this.websocketInitializationPromise = undefined;
-    }
-
-    /**
-     * Initialize an websocket connection.
-     */
-    protected initializeSocket(): Promise<WebSocket> {
-        if (this.websocketInitializationPromise) {
-            return this.websocketInitializationPromise;
-        }
-
-        this.websocketInitializationPromise = new Promise((resolve, reject) => {
-            const token = encodeURIComponent(this.options.token);
-            const uuid = this.uuid;
-            const socket = new WebSocket(`wss://ws.larasocket.com?token=${token}&uuid=${uuid}`);
-
-            // Connection opened
-            socket.addEventListener('open', (event) => {
-                socket.send(JSON.stringify(new LinkMessage(token, uuid).toNetworkJson()));
-            });
-
-            // Listen for messages
-            socket.addEventListener('message', (event) => {
-                const rawMessage = event.data;
-
-                try {
-                    const rawJson = JSON.parse(rawMessage);
-
-                    const message = new IncomingMessage(rawJson);
-
-                    if (message.action === IncomingMessageType.LINKED) {
-                        this.connectionId = message.connectionId!;
-                        this.websocketInstanceReady(socket);
-                        resolve(socket);
-                    } else {
-                        this.route(message);
-                    }
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        });
-
-        return this.websocketInitializationPromise;
     }
 }
