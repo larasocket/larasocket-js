@@ -162,7 +162,7 @@ export class LarasocketManager {
                     // convert payload into an object
                     this.listeners[formattedEventName](payloadForListeners);
                 } catch (e) {
-                    //
+                    throw new Error('Failed to parse incoming message');
                 }
             }
         }
