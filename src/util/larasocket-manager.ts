@@ -170,9 +170,7 @@ export class LarasocketManager {
      */
     protected authenticate(channel: LarasocketChannel): Promise<any> {
         if (channel instanceof LarasocketPresenceChannel || channel instanceof LarasocketPrivateChannel) {
-            return this.websocketInstance.getAuthNetworkPromise(channel.name).then((response: any) => {
-                return response.data;
-            });
+            return this.websocketInstance.getAuthNetworkPromise(channel);
         }
 
         return Promise.resolve(); // dummy Promise. No auth for public channels.

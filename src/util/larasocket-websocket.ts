@@ -107,34 +107,48 @@ export class LarasocketWebsocket {
 
     /**
      *
-     * @param channelName
+     * @param channel
      */
-    getAuthNetworkPromise(channelName: string): Promise<any> {
+    getAuthNetworkPromise(channel: LarasocketChannel): Promise<any> {
         return this.getWebsocketInstance().then((socket) => {
-            const endpoint = this.options.authEndpoint;
+            if (this.options.authorizer) {
+                const authorizer = this.options.authorizer(channel, this.options);
+
+                return new Promise((resolve, reject) => {
+                    authorizer.authorize(this.connectionId!, (error: boolean, data: any) => {
+                        if (error) {
+                            return reject(data);
+                        }
+
+                        return resolve(data);
+                    });
+                });
+            }
+
+            let networkAgent;
 
             if (typeof Vue === 'function' && Vue.http) {
-                return Vue.http.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
+                networkAgent = Vue.http;
             }
 
             if (typeof axios === 'function') {
-                return axios.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
+                networkAgent = axios;
             }
 
             if (typeof jQuery === 'function') {
-                return jQuery.post(endpoint, {
-                    socket_id: this.connectionId!,
-                    channel_name: channelName,
-                    _token: this.csrf,
-                });
+                networkAgent = jQuery;
+            }
+
+            if (networkAgent) {
+                return networkAgent
+                    .post(this.options.authEndpoint, {
+                        socket_id: this.connectionId!,
+                        channel_name: channel.name,
+                        _token: this.csrf,
+                    })
+                    .then((response: any) => {
+                        return response.data;
+                    });
             }
 
             throw new Error('Need either Vue.http, axios, or jQuery');
