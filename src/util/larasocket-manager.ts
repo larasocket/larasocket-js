@@ -153,8 +153,13 @@ export class LarasocketManager {
 
             if (this.listeners[formattedEventName]) {
                 try {
+                    let payloadForListeners = message.payload;
+
+                    if (typeof payloadForListeners === 'string') {
+                        payloadForListeners = JSON.parse(payloadForListeners);
+                    }
+
                     // convert payload into an object
-                    const payloadForListeners = JSON.parse(message.payload);
                     this.listeners[formattedEventName](payloadForListeners);
                 } catch (e) {
                     //
