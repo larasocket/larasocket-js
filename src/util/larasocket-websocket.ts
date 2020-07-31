@@ -149,9 +149,25 @@ export class LarasocketWebsocket {
                     .then((response: any) => {
                         return response.data;
                     });
+            } else {
+                return fetch(this.options.authEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        socket_id: this.connectionId!,
+                        channel_name: channel.name,
+                        _token: this.csrf,
+                    })
+                })
+                    .then((response: any) => {
+                        return response.json();
+                    });
             }
 
-            throw new Error('Need either Vue.http, axios, or jQuery');
+            throw new Error('Need either Vue.http, axios, jQuery, or fetch.');
         });
     }
 
